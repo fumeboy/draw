@@ -2,7 +2,7 @@ function Run(canvas) {
     this.bgColor = "#fff"
     this.canvas = canvas;
     this.cvs = canvas.getContext("2d");
-    this.penColor = "#CD6155";//画笔颜色
+    this.penColor = "#000";//画笔颜色
     this.ifClear = false; // 是否是橡皮擦状态 
     this.boxSize = null;//单个格子大小
     this.colorArr = new Set();//记录使用过的颜色

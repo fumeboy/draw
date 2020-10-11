@@ -1,30 +1,42 @@
 <template>
   <div id="app">
       <v-app id="inspire">
-        <v-navigation-drawer
-                app
-        >
-            <v-text-field
-                    flat
-                    solo
-                    filled
-                    hide-details
-                    prepend-inner-icon="mdi-pen"
-                    :append-icon="'mdi-plus'"
-                    @click:append="addColor"
-                    background-color="#f1f1f1"
-                    label="color"
-                    v-model="color_selector"
-            ></v-text-field>
-            <div class="color-viewer" :style="'background-color: '+color_selector"></div>
-            <div>
-              <div v-for="item in history" :key="item.i" class="color-item">
-                <v-btn class="color-box" small depressed :style="'background-color: '+item.v"></v-btn>
-                <v-btn text small @click="()=>setBgColor(item.v)">Background</v-btn>
-                <v-btn text small @click="()=>setColor(item.v)">Pen</v-btn>
-              </div>
+        <v-navigation-drawer app v-model="drawer"  :clipped="$vuetify.breakpoint.lgAndUp">
+          <v-text-field
+                  flat
+                  solo
+                  filled
+                  hide-details
+                  prepend-inner-icon="mdi-pen"
+                  :append-icon="'mdi-plus'"
+                  @click:append="addColor"
+                  background-color="#f1f1f1"
+                  label="color"
+                  v-model="color_selector"
+          ></v-text-field>
+          <div class="color-viewer" :style="'background-color: '+color_selector"></div>
+          <div>
+            <div v-for="item in history" :key="item.i" class="color-item">
+              <v-btn class="color-box" small depressed :style="'background-color: '+item.v"></v-btn>
+              <v-btn text small @click="()=>setBgColor(item.v)">Background</v-btn>
+              <v-btn text small @click="()=>setColor(item.v)">Pen</v-btn>
             </div>
+          </div>
         </v-navigation-drawer>
+        <v-app-bar
+                :clipped-left="$vuetify.breakpoint.lgAndUp"
+                app
+                color="blue darken-3"
+                dark
+        >
+          <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+          <v-toolbar-title
+                  style="width: 300px"
+                  class="ml-0 pl-4"
+          >
+            <span class="hidden-sm-and-down">PIXEL DRAWER</span>
+          </v-toolbar-title>
+        </v-app-bar>
         <v-main style="background-color: rgba(241, 241, 241, 0.5)">
           <v-container
                   class="fill-height"
@@ -119,10 +131,6 @@
               </v-row>
             </v-container>
             <v-card-actions>
-              <v-btn
-                      text
-                      color="primary"
-              >More</v-btn>
               <v-spacer></v-spacer>
               <v-btn
                       text
@@ -153,6 +161,8 @@
                   本网页程序应当在PC端使用。
                   左侧是调色器以及色彩板，可以选择笔刷颜色和背景颜色
                   （导出图片时，背景颜色不显示）
+
+                   笔刷颜色设置为空时，表示橡皮擦
                 </v-col>
               </v-row>
             </v-container>
@@ -170,6 +180,7 @@ import {Run} from './draw.js'
 export default {
   name: 'App',
   data: () => ({
+    drawer: null,
     fab: false,
     export_filename:"a1",
     cvs: null,
