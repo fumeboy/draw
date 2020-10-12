@@ -1,12 +1,11 @@
-function Run(canvas) {
-    this.bgColor = "#fff"
-    this.canvas = canvas;
-    this.cvs = canvas.getContext("2d");
+function Run(canvas, size) {
+    this.canvas = null;
+    this.init(canvas);
+    this.cvs = this.canvas.getContext("2d");
     this.penColor = "#000";//画笔颜色
     this.ifClear = false; // 是否是橡皮擦状态 
     this.boxSize = null;//单个格子大小
-    this.colorArr = new Set();//记录使用过的颜色
-    this.size = 16;//格子数（边）
+    this.size = size;//格子数（边）
     this.gridArr = new Array(this.size*this.size);//画布所有格子，标记有无绘画
     this.distanceX = null;//画布在屏幕中相对位置
     this.distanceY = null;
@@ -17,12 +16,15 @@ function Run(canvas) {
     this.touchstart();
     return this
 }
+Run.prototype.init = function(canvas){
+    canvas.innerHTML = "<canvas></canvas>"
+    this.canvas = canvas.children[0]
+}
 Run.prototype.SetColor = function(color){
     if (color){
         this.penColor = color
         this.ifClear = false
     }else{
-        this.penColor = this.bgColor
         this.ifClear = true
     }
 }
@@ -168,18 +170,21 @@ Run.prototype.beforeDraw = function (x, y, z) {
     }
     this.preX = x;
     this.preY = y;
-    this.colorArr.add(this.penColor);
 };
-Run.prototype.clean = function () {
-    this.gridArr = new Array(this.size*this.size);
-    this.drawBg();
-};
+
+Run.prototype.bg_color = function (i){
+    if ((i)%2===0){
+        return "#fff";
+    }else{
+        return "#eee";
+    }
+}
 
 Run.prototype.drawBg = function () {
     let temp_color = this.penColor;
-    this.penColor = this.bgColor;
     for (let i = 0; i < this.size; i++) {
         for (let j = 0; j < this.size; j++) {
+            this.penColor = this.bg_color(i+j)
             if(!this.gridArr[i + this.size * j])this.drawUnit(i, j)
         }
     }
@@ -199,7 +204,7 @@ Run.prototype.drawUnit = function (x, y) {
     let pos_x = x * this.boxSize
     let pos_y = y * this.boxSize
     this.cvs.beginPath();
-    this.cvs.fillStyle = this.penColor;
+    this.cvs.fillStyle = this.ifClear?this.bg_color(x+y):this.penColor;
     this.cvs.fillRect(pos_x, pos_y, this.boxSize, this.boxSize);
     this.cvs.fill();
     this.cvs.stroke();
